@@ -68,11 +68,13 @@ use.open = function (opts) {
 router.get('/', (req, res, next) => {
     //获取openid并返回
     //router.login = function (req, res) {
-    console.log(req)
+//    console.log(req)
     let r1 = ' ';
     let appId = 'wxdf4236783aec3090';
     let secret = '9cfaa5e0f39a51f480f20b72c402b599';
-    let js_code = req.body.code;
+    let js_code = req.query.code;
+    
+    
     let encryptedData = req.body.encryptedData;
     let iv = req.body.iv;
     let sessionKey = ' ';
@@ -81,18 +83,10 @@ router.get('/', (req, res, next) => {
 
     }
     use.open(opts).then(function (value) {
-        var r1 = JSON.parse(value)
-        var pc = new WXBizDaraCrypt(appId, r1.session_key)
-        var data = pc.decryptData(encryptedData, iv)
-        console.log('Decrypted',data)
-    }, function (error) {
-        console.log(error)
-    });
         
+        value = JSON.parse(value)
         
-        
-    //连接数据库并查找是否存在
-    var mysql = require('mysql');
+        var mysql = require('mysql');
     var connection = mysql.createConnection({
         host     : 'mydatabase.c9ukuxyqda4n.us-west-1.rds.amazonaws.com',
         port     : '3306',
@@ -103,10 +97,11 @@ router.get('/', (req, res, next) => {
     });
 
     connection.connect(function(err) {
+        console.log(value)
         if(err) console.log('与MySQL数据库建立连接失败。');
         else{
             console.log('与MySQL数据库建立连接成功。');
-            connection.query('SELECT * FROM user_info WHERE wechat_openid=\'100\'',function(err,data) {               //wechat_openid 记得修改
+            connection.query('SELECT * FROM user_info WHERE wechat_openid=\''+value.openid+'\'',function(err,data) {               //wechat_openid 记得修改
                            if(err) {
                                console.log('查询数据失败');
                                res.status(404).send('查询数据失败');
@@ -114,7 +109,8 @@ router.get('/', (req, res, next) => {
                            } else {
                                console.log(data)
                                if(data.length==0){
-                                   var add = 'INSERT INTO user_info(wechat_openid,user_id) VALUES(\'fym\',' +Math.round(Math.random()*100000000000)+ ')';     //暂时是undefined 还没收到后端 ' +req.body.code + '
+                                   var time = Date.now();
+                                   var add = 'INSERT INTO user_info(wechat_openid,user_id) VALUES(\''+value.openid+'\',' +time+ ')';     //暂时是undefined 还没收到后端 ' +req.body.code + '
                                   
                                    
                                    connection.query(add,function(er,result) {
@@ -126,8 +122,13 @@ router.get('/', (req, res, next) => {
                                                     if(result.length==0){
                                        console.log('插入数据失败');
                                    } else {
+                                       console.log(result)
                                        console.log('插入数据成功');
-                                       res.status(200).send('成功了');
+                                    
+                                       res.status(200).send({
+                                           user_id:time,
+                                       });
+                                       
                                    }
                                         }
                                                     })
@@ -141,8 +142,16 @@ router.get('/', (req, res, next) => {
                  }
     });
 })
-
-   
+    }, function (error) {
+        console.log(error)
+    });
+    
+    
+        
+        
+        
+    //连接数据库并查找是否存在
+    
 
 
 app.use('/testpath', router)
