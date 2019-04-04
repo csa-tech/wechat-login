@@ -10,9 +10,6 @@ const urlencodedParser = bodyParser.urlencoded({
     extended: false
 });
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
-var pageview = require('./routes/pageview');
 
 var app = express();
 
