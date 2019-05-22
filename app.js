@@ -96,7 +96,12 @@ router.get('/', (req, res, next) => {
         if(err) console.log('与MySQL数据库建立连接失败。');
         else{
             console.log('与MySQL数据库建立连接成功。');
-            connection.query('SELECT * FROM user_info WHERE wechat_openid=\''+value.openid+'\'',function(err,data) {               //wechat_openid 记得修改
+            //reformat sql query
+            connection.query("SELECT * FROM user_info WHERE wechat_openid=?;",
+                [
+                    value.openid
+                ],
+                function(err,data) {               //wechat_openid 记得修改
                            if(err) {
                                console.log('查询数据失败');
                                res.status(404).send('查询数据失败');
@@ -105,10 +110,15 @@ router.get('/', (req, res, next) => {
                                console.log(data)
                                if(data.length==0){
                                    var time = Date.now();
-                                   var add = 'INSERT INTO user_info(wechat_openid,user_id) VALUES(\''+value.openid+'\',' +time+ ')';     //暂时是undefined 还没收到后端 ' +req.body.code + '
+                                   //var add = "INSERT INTO user_info(wechat_openid,user_id) VALUES(\''+value.openid+'\',' +time+ ');"     //暂时是undefined 还没收到后端 ' +req.body.code + '
                                   
-                                   
-                                   connection.query(add,function(er,result) {
+                                   //reformat sql query
+                                   connection.query("INSERT INTO user_info(wechat_openid,user_id) VALUES(?,?);",
+                                   [
+                                        value.openid,
+                                        time
+                                   ] ,
+                                   function(er,result) {
                                         if(er){
                                                 console.log(er);
                                                 console.log('插入数据失败');
