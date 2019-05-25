@@ -33,7 +33,7 @@ function open(opts) {
   });
 }
 
-router.post(
+router.get(
   "/",
   (req, res, next) => {
     
