@@ -125,9 +125,7 @@ router.get(
                     }
                   );
                 } else {
-                  res.status(200).send({
-                    user_id: data[0].user_id
-                  });
+                  res.status(200).send(data[0]);
                 }
 
                 connection.end();
