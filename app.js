@@ -111,8 +111,8 @@ router.get(
                             "SELECT * FROM user_info WHERE wechat_openid=?;",
                             [value.openid],
                             function(err, data) {
-                              if (er) {
-                                console.log(er);
+                              if (err) {
+                                console.log(err);
                                 console.log("插入数据失败");
                                 res.status(500).send("插入数据失败");
                               } else {
