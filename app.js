@@ -36,9 +36,9 @@ function open(opts) {
 router.get(
   "/",
   (req, res, next) => {
+    
     //获取openid并返回
-    //router.login = function (req, res) {
-    //    console.log(req)
+    console.log(req.body);
     let r1 = " ";
     let appId = "wxdf4236783aec3090";
     let secret = "9cfaa5e0f39a51f480f20b72c402b599";
@@ -53,6 +53,7 @@ router.get(
 
     open(opts).then(function(value) {
       value = JSON.parse(value);
+      console.log(value)
       // value: information from WeChat
       // https://developers.weixin.qq.com/miniprogram/dev/api-backend/auth.code2Session.html
       // openid	string	用户唯一标识
